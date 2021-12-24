@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ContentType } from '../data/initContent';
 import { useAppSelector, useAppDispatch } from '../data/reduxHooks';
-import { selectItems, setItems } from '../redux/serviceSlice';
+import { removeItem, selectItems, setItems } from '../redux/serviceSlice';
 
 export default function useApi(baseUrl: string | null) {
     const url = baseUrl || 'http://localhost:9091';
@@ -16,6 +16,19 @@ export default function useApi(baseUrl: string | null) {
         const resData = await res.json();
 
         dispatch(setItems(resData));
+        setIsQuerying(false);
+    };
+
+    const remove = async (id: string) => {
+        setIsQuerying(true);
+        await fetch(`${url}/posts/${id}`, {
+            method: 'DELETE',
+        });
+
+        const index = data.findIndex((item) => item.id === id);
+        if (index === -1) return;
+
+        dispatch(removeItem(index));
         setIsQuerying(false);
     };
 
@@ -43,25 +56,11 @@ export default function useApi(baseUrl: string | null) {
     //     await add(post);
     // };
 
-    // const remove = async (id: string) => {
-    //     setIsQuerying(true);
-    //     await fetch(`${url}/posts/${id}`, {
-    //         method: 'DELETE',
-    //     });
-
-    //     const copy = [...data];
-    //     const index = copy.findIndex((item) => item.id === id);
-    //     copy.splice(index, 1);
-
-    //     setData(copy);
-    //     setIsQuerying(false);
-    // };
-
     const api = {
         list,
         // add,
         // edit,
-        // remove,
+        remove,
     };
 
     return { data, isQuerying, api };

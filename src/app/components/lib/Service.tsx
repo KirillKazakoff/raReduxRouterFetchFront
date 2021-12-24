@@ -5,14 +5,14 @@ import { Flex, Button, Text } from '../primitives/primitives';
 import { ContentType } from '../../data/initContent';
 import { removeItem } from '../../redux/serviceSlice';
 
-type ServiceProps = { item: ContentType };
+type ServiceProps = { item: ContentType; remove: (id: string) => void };
 
-export default function Service({ item }: ServiceProps) {
+export default function Service({ item, remove }: ServiceProps) {
     const dispatch = useAppDispatch();
 
     const onRemove = (e: React.SyntheticEvent) => {
         const { id } = e.currentTarget;
-        dispatch(removeItem(id));
+        remove(id);
     };
 
     const onEdit = (e: React.SyntheticEvent) => {

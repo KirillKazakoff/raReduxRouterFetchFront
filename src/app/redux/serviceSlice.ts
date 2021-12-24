@@ -33,9 +33,8 @@ export const serviceSlice = createSlice({
         addItem: (state, action: PayloadAction<ContentType>) => {
             state.items.push(action.payload);
         },
-        removeItem: (state, action: PayloadAction<string>) => {
-            const index = findIndex(state.items, action.payload);
-            state.items.splice(index, 1);
+        removeItem: (state, action: PayloadAction<number>) => {
+            state.items.splice(action.payload, 1);
         },
         setEditted: (state, action: PayloadAction<string>) => {
             state.editted = action.payload;
