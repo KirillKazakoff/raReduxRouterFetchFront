@@ -1,13 +1,15 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
 import { AiFillEdit } from '@react-icons/all-files/ai/AiFillEdit';
 import { updateForm } from '../../redux/formSlice';
-import { useAppDispatch, useAppSelector } from '../../data/initContent';
+import { ContentType, useAppDispatch, useAppSelector } from '../../data/initContent';
 import {
     selectItems,
     removeItem,
     setEditted,
     selectEditted,
 } from '../../redux/serviceSlice';
+import useApi from '../../request/useApi';
 
 import { Flex } from '../primitives/Flex';
 import { Text } from '../primitives/Text';
@@ -15,7 +17,11 @@ import Ul from '../primitives/Ul';
 import Button from '../primitives/Button';
 
 export default function MyTable() {
-    const items = useAppSelector(selectItems);
+    const { api, data: items, isQuerying } = useApi('');
+    useEffect(() => {
+        api.list();
+    }, []);
+    // const items = useAppSelector(selectItems);
     const dispatch = useAppDispatch();
     const isEditted = useAppSelector(selectEditted);
 
@@ -58,6 +64,7 @@ export default function MyTable() {
         </Flex>
     ));
 
+    if (isQuerying) return <div>Loading ...</div>;
     return (
         <Ul
             bg='tomato'

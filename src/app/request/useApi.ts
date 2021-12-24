@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { ContentType } from '../data/initContent';
+import { ContentType, useAppDispatch } from '../data/initContent';
 
-export default function useApi(baseUrl: string) {
+export default function useApi(baseUrl: string | null) {
+    const url = baseUrl || 'http://localhost:9091';
+
     const [data, setData] = useState<ContentType[]>([]);
     const [isQuerying, setIsQuerying] = useState(false);
 
     const list = async () => {
         setIsQuerying(true);
-        const res = await fetch(`${baseUrl}/posts`);
+        const res = await fetch(`${url}/posts`);
         const resData = await res.json();
 
         setData([...resData]);
@@ -16,7 +18,7 @@ export default function useApi(baseUrl: string) {
 
     const add = async (post: ContentType) => {
         setIsQuerying(true);
-        await fetch(`${baseUrl}/posts`, {
+        await fetch(`${url}/posts`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -40,7 +42,7 @@ export default function useApi(baseUrl: string) {
 
     const remove = async (id: string) => {
         setIsQuerying(true);
-        await fetch(`${baseUrl}/posts/${id}`, {
+        await fetch(`${url}/posts/${id}`, {
             method: 'DELETE',
         });
 
