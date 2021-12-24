@@ -1,17 +1,35 @@
-import React from 'react';
-import { nanoid } from 'nanoid';
-import { changeInput, refreshForm, selectInputs } from '../../redux/formSlice';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+    changeInput,
+    refreshForm,
+    selectInputs,
+    updateForm,
+} from '../../redux/formSlice';
 import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
+import { editItem, selectEditted } from '../../redux/serviceSlice';
+import useApi from '../../logic/useApi';
+
 import Button from '../primitives/Button';
 import { Flex } from '../primitives/Flex';
 import Form from '../primitives/Form';
 import Input from '../primitives/Input';
-import { addItem, editItem, selectEditted } from '../../redux/serviceSlice';
 
 export default function FormR() {
+    const { api, editted, isQuerying } = useApi('');
     const dispatch = useAppDispatch();
-    const editId = useAppSelector(selectEditted);
     const inputs = useAppSelector(selectInputs);
+
+    const params = useParams();
+
+    useEffect(() => {
+        if (!params.id) return;
+
+        api.setItem(params.id).then((res) => {
+            const itemFields = { service: res.service, amount: res.amount };
+            dispatch(updateForm(itemFields));
+        });
+    }, []);
 
     const onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
         const changedInput = { name: e.currentTarget.name, value: e.currentTarget.value };
@@ -20,18 +38,17 @@ export default function FormR() {
 
     const onSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
+        if (!editted) return;
 
-        const newService = { ...inputs, id: nanoid() };
+        const result = { ...inputs, id: editted.id };
         dispatch(refreshForm());
-        if (editId) {
-            newService.id = editId;
-            dispatch(editItem(newService));
-            return;
-        }
 
-        dispatch(addItem(newService));
+        dispatch(editItem(result));
     };
 
+    // const itemFields = { service: editted.service, amount: editted.amount };
+    // dispatch(updateForm(itemFields));
+    if (!editted) return <div>Loading...</div>;
     return (
         <Form mb={4} onSubmit={onSubmit}>
             <Flex gap='10px' justifyContent='center'>

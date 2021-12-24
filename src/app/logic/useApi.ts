@@ -1,11 +1,20 @@
 import { useState } from 'react';
 import { ContentType } from '../data/initContent';
 import { useAppSelector, useAppDispatch } from '../data/reduxHooks';
-import { removeItem, selectItems, setItems } from '../redux/serviceSlice';
+import { refreshForm } from '../redux/formSlice';
+import {
+    editItem,
+    removeItem,
+    selectEditted,
+    selectItems,
+    setEditted,
+    setItems,
+} from '../redux/serviceSlice';
 
 export default function useApi(baseUrl: string | null) {
     const url = baseUrl || 'http://localhost:9091';
     const data = useAppSelector(selectItems);
+    const editted = useAppSelector(selectEditted);
     const dispatch = useAppDispatch();
 
     const [isQuerying, setIsQuerying] = useState(false);
@@ -19,6 +28,16 @@ export default function useApi(baseUrl: string | null) {
         setIsQuerying(false);
     };
 
+    const setItem = async (id: string) => {
+        setIsQuerying(true);
+        const res = await fetch(`${url}/post/${id}`);
+        const resData = await res.json();
+
+        dispatch(setEditted(resData));
+        setIsQuerying(false);
+        return resData;
+    };
+
     const remove = async (id: string) => {
         setIsQuerying(true);
         await fetch(`${url}/posts/${id}`, {
@@ -29,6 +48,21 @@ export default function useApi(baseUrl: string | null) {
         if (index === -1) return;
 
         dispatch(removeItem(index));
+        setIsQuerying(false);
+    };
+
+    const edit = async (post: ContentType) => {
+        dispatch(editItem(post));
+        setIsQuerying(true);
+
+        await fetch(`${url}/posts`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(post),
+        });
         setIsQuerying(false);
     };
 
@@ -47,21 +81,17 @@ export default function useApi(baseUrl: string | null) {
     //     setIsQuerying(false);
     // };
 
-    // const edit = async (post: ContentType) => {
-    //     const copy = [...data];
-    //     const index = copy.findIndex((item) => item.id === post.id);
-    //     copy.splice(index, 1);
-
-    //     setData(copy);
-    //     await add(post);
-    // };
-
     const api = {
         list,
-        // add,
-        // edit,
+        setItem,
+        edit,
         remove,
     };
 
-    return { data, isQuerying, api };
+    return {
+        data,
+        editted,
+        isQuerying,
+        api,
+    };
 }

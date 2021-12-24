@@ -7,14 +7,16 @@ import type { AppThunk, RootState } from './store';
 
 export interface ServiceState {
     items: ContentType[];
-    editted: string;
+    // editted: string;
+    editted: ContentType | null;
     filter: string;
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: ServiceState = {
     items: initContent,
-    editted: '',
+    // editted: '',
+    editted: null,
     filter: '',
     status: 'idle',
 };
@@ -36,49 +38,29 @@ export const serviceSlice = createSlice({
         removeItem: (state, action: PayloadAction<number>) => {
             state.items.splice(action.payload, 1);
         },
-        setEditted: (state, action: PayloadAction<string>) => {
+        // setEditted: (state, action: PayloadAction<string>) => {
+        //     state.editted = action.payload;
+        // },
+        setEditted: (state, action: PayloadAction<ContentType>) => {
             state.editted = action.payload;
         },
         editItem: (state, action: PayloadAction<ContentType>) => {
             const index = findIndex(state.items, action.payload.id);
             state.items[index] = action.payload;
         },
-        setFilter: (state, action: PayloadAction<string>) => {
-            state.filter = action.payload;
-        },
     },
 });
 
-export const { addItem, removeItem, setEditted, setFilter, setItems } = serviceSlice.actions;
+export const { addItem, removeItem, setEditted, setItems, editItem } = serviceSlice.actions;
 
 export const selectItems = (state: RootState) => {
     return state.service.items.filter((item) => item.service.includes(state.service.filter));
 };
 export const selectEditted = (state: RootState) => state.service.editted;
 
-export const editItem = (item: ContentType): AppThunk => (dispatch) => {
-    dispatch(serviceSlice.actions.editItem(item));
-    dispatch(setEditted(''));
-};
+// export const editItem = (item: ContentType): AppThunk => (dispatch) => {
+//     dispatch(serviceSlice.actions.editItem(item));
+//     dispatch(setEditted(''));
+// };
 
 export default serviceSlice.reducer;
-
-// class Reducer {
-//     state: ServiceState;
-
-//     constructor(state: ServiceState) {
-//         this.state = state;
-//     }
-
-//     addItem(action: PayloadAction<ContentType>) {
-//         this.state.items.push(action.payload);
-//     }
-
-//     removeItem(action: PayloadAction<string>) {
-//         const index = this.state.items.findIndex((item) => item.id === action.payload);
-//         this.state.items.splice(index, 1);
-//     }
-//     editItem: (state: ServiceState, action: PayloadAction<ContentType>) => {
-
-//     }
-// }
