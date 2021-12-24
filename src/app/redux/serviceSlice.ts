@@ -50,7 +50,7 @@ export const serviceSlice = createSlice({
     },
 });
 
-export const { addItem, removeItem, setEditted, setFilter } = serviceSlice.actions;
+export const { addItem, removeItem, setEditted, setFilter, setItems } = serviceSlice.actions;
 
 export const selectItems = (state: RootState) => {
     return state.service.items.filter((item) => item.service.includes(state.service.filter));

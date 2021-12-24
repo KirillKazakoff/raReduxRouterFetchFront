@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { ContentType, useAppDispatch } from '../data/initContent';
+import { ContentType, useAppDispatch, useAppSelector } from '../data/initContent';
+import { selectItems, setItems } from '../redux/serviceSlice';
 
 export default function useApi(baseUrl: string | null) {
     const url = baseUrl || 'http://localhost:9091';
+    const data = useAppSelector(selectItems);
+    const dispatch = useAppDispatch();
 
-    const [data, setData] = useState<ContentType[]>([]);
     const [isQuerying, setIsQuerying] = useState(false);
 
     const list = async () => {
@@ -12,7 +14,7 @@ export default function useApi(baseUrl: string | null) {
         const res = await fetch(`${url}/posts`);
         const resData = await res.json();
 
-        setData([...resData]);
+        dispatch(setItems(resData));
         setIsQuerying(false);
     };
 
