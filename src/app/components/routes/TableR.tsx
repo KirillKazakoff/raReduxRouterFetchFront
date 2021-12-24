@@ -1,22 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { AiFillEdit } from '@react-icons/all-files/ai/AiFillEdit';
 import { updateForm } from '../../redux/formSlice';
-import { ContentType, useAppDispatch, useAppSelector } from '../../data/initContent';
-import {
-    selectItems,
-    removeItem,
-    setEditted,
-    selectEditted,
-} from '../../redux/serviceSlice';
-import useApi from '../../request/useApi';
+import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
+import { removeItem, setEditted, selectEditted } from '../../redux/serviceSlice';
+import useApi from '../../logic/useApi';
 
 import { Flex } from '../primitives/Flex';
 import { Text } from '../primitives/Text';
 import Ul from '../primitives/Ul';
 import Button from '../primitives/Button';
 
-export default function MyTable() {
+export default function TableR() {
     const { api, data: items, isQuerying } = useApi('');
     useEffect(() => {
         api.list();

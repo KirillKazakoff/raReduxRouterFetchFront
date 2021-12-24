@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ContentType, useAppDispatch, useAppSelector } from '../data/initContent';
+import { ContentType } from '../data/initContent';
+import { useAppSelector, useAppDispatch } from '../data/reduxHooks';
 import { selectItems, setItems } from '../redux/serviceSlice';
 
 export default function useApi(baseUrl: string | null) {
@@ -18,49 +19,49 @@ export default function useApi(baseUrl: string | null) {
         setIsQuerying(false);
     };
 
-    const add = async (post: ContentType) => {
-        setIsQuerying(true);
-        await fetch(`${url}/posts`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(post),
-        });
+    // const add = async (post: ContentType) => {
+    //     setIsQuerying(true);
+    //     await fetch(`${url}/posts`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(post),
+    //     });
 
-        setData([...data, post]);
-        setIsQuerying(false);
-    };
+    //     setData([...data, post]);
+    //     setIsQuerying(false);
+    // };
 
-    const edit = async (post: ContentType) => {
-        const copy = [...data];
-        const index = copy.findIndex((item) => item.id === post.id);
-        copy.splice(index, 1);
+    // const edit = async (post: ContentType) => {
+    //     const copy = [...data];
+    //     const index = copy.findIndex((item) => item.id === post.id);
+    //     copy.splice(index, 1);
 
-        setData(copy);
-        await add(post);
-    };
+    //     setData(copy);
+    //     await add(post);
+    // };
 
-    const remove = async (id: string) => {
-        setIsQuerying(true);
-        await fetch(`${url}/posts/${id}`, {
-            method: 'DELETE',
-        });
+    // const remove = async (id: string) => {
+    //     setIsQuerying(true);
+    //     await fetch(`${url}/posts/${id}`, {
+    //         method: 'DELETE',
+    //     });
 
-        const copy = [...data];
-        const index = copy.findIndex((item) => item.id === id);
-        copy.splice(index, 1);
+    //     const copy = [...data];
+    //     const index = copy.findIndex((item) => item.id === id);
+    //     copy.splice(index, 1);
 
-        setData(copy);
-        setIsQuerying(false);
-    };
+    //     setData(copy);
+    //     setIsQuerying(false);
+    // };
 
     const api = {
         list,
-        add,
-        edit,
-        remove,
+        // add,
+        // edit,
+        // remove,
     };
 
     return { data, isQuerying, api };

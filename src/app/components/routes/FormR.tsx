@@ -1,14 +1,14 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
 import { changeInput, refreshForm, selectInputs } from '../../redux/formSlice';
-import { useAppDispatch, useAppSelector } from '../../data/initContent';
+import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
 import Button from '../primitives/Button';
 import { Flex } from '../primitives/Flex';
 import Form from '../primitives/Form';
 import Input from '../primitives/Input';
 import { addItem, editItem, selectEditted } from '../../redux/serviceSlice';
 
-export default function MyForm() {
+export default function FormR() {
     const dispatch = useAppDispatch();
     const editId = useAppSelector(selectEditted);
     const inputs = useAppSelector(selectInputs);

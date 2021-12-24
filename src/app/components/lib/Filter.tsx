@@ -4,7 +4,7 @@ import { Flex } from '../primitives/Flex';
 import Input from '../primitives/Input';
 import { Text } from '../primitives/Text';
 
-import { useAppDispatch, useAppSelector } from '../../data/initContent';
+import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
 
 export default function Filter() {
     const dispatch = useAppDispatch();

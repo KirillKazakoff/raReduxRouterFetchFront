@@ -1,17 +1,21 @@
 import '../css/defaultStyle.css';
 
 import React from 'react';
+import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
 import { Box } from './components/primitives/Box';
-import MyForm from './components/lib/MyForm';
-import MyTable from './components/lib/MyTable';
-import Filter from './components/lib/Filter';
+import TableR from './components/routes/TableR';
+import FormR from './components/routes/FormR';
+import MainR from './components/routes/MainR';
 
 export default function App() {
     return (
-        <Box variant='layout'>
-            <MyForm />
-            <MyTable />
-            <Filter />
-        </Box>
+        <Router>
+            <Routes>
+                <Route path='/' element={<MainR />}>
+                    <Route path='/services' element={<TableR />} />
+                    <Route path='/edit' element={<FormR />} />
+                </Route>
+            </Routes>
+        </Router>
     );
 }
