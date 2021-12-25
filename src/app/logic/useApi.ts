@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ContentType } from '../data/initContent';
 import { useAppSelector, useAppDispatch } from '../data/reduxHooks';
-import { refreshForm } from '../redux/formSlice';
 import {
     editItem,
     removeItem,

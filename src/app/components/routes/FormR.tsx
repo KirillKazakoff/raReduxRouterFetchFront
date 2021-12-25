@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { EffectCallback, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     changeInput,
     refreshForm,
@@ -7,7 +7,6 @@ import {
     updateForm,
 } from '../../redux/formSlice';
 import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
-import { editItem, selectEditted } from '../../redux/serviceSlice';
 import useApi from '../../logic/useApi';
 
 import Button from '../primitives/Button';
@@ -21,14 +20,22 @@ export default function FormR() {
     const inputs = useAppSelector(selectInputs);
 
     const params = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!params.id) return;
+        let isMounted = true;
+        const unmountFunc = () => {
+            isMounted = false;
+        };
+
+        if (!isMounted || !params.id) return unmountFunc;
 
         api.setItem(params.id).then((res) => {
             const itemFields = { service: res.service, amount: res.amount };
             dispatch(updateForm(itemFields));
         });
+
+        return unmountFunc;
     }, []);
 
     const onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -43,12 +50,11 @@ export default function FormR() {
         const result = { ...inputs, id: editted.id };
         dispatch(refreshForm());
 
-        dispatch(editItem(result));
+        api.edit(result);
+        navigate('/services');
     };
 
-    // const itemFields = { service: editted.service, amount: editted.amount };
-    // dispatch(updateForm(itemFields));
-    if (!editted) return <div>Loading...</div>;
+    if (isQuerying) return <div>Loading...</div>;
     return (
         <Form mb={4} onSubmit={onSubmit}>
             <Flex gap='10px' justifyContent='center'>

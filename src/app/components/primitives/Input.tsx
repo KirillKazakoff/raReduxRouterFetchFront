@@ -3,7 +3,7 @@ import { variant } from 'styled-system';
 import { boxCompose } from './styledCompose';
 import { BoxProps } from './rebassTypes';
 
-type InputProps = BoxProps;
+export type InputProps = BoxProps;
 
 const Input = styled.input<InputProps>(
     variant({
