@@ -10,35 +10,37 @@ import {
     setItems,
 } from '../redux/serviceSlice';
 
+// type Status = 'idle' | 'loading' | 'failed';
+
 export default function useApi(baseUrl: string | null) {
     const url = baseUrl || 'http://localhost:9091';
     const data = useAppSelector(selectItems);
     const editted = useAppSelector(selectEditted);
     const dispatch = useAppDispatch();
 
-    const [isQuerying, setIsQuerying] = useState(false);
+    const [isQuerying, setIsQuerying] = useState<boolean>(false);
 
     const list = async () => {
-        setIsQuerying(true);
+        setIsQuerying(false);
         const res = await fetch(`${url}/posts`);
         const resData = await res.json();
 
         dispatch(setItems(resData));
-        setIsQuerying(false);
+        setIsQuerying(true);
     };
 
     const setItem = async (id: string) => {
-        setIsQuerying(true);
+        setIsQuerying(false);
         const res = await fetch(`${url}/post/${id}`);
         const resData = await res.json();
 
         dispatch(setEditted(resData));
-        setIsQuerying(false);
+        setIsQuerying(true);
         return resData;
     };
 
     const remove = async (id: string) => {
-        setIsQuerying(true);
+        setIsQuerying(false);
         await fetch(`${url}/posts/${id}`, {
             method: 'DELETE',
         });
@@ -47,12 +49,12 @@ export default function useApi(baseUrl: string | null) {
         if (index === -1) return;
 
         dispatch(removeItem(index));
-        setIsQuerying(false);
+        setIsQuerying(true);
     };
 
     const edit = async (post: ContentType) => {
+        setIsQuerying(false);
         dispatch(editItem(post));
-        setIsQuerying(true);
 
         await fetch(`${url}/posts`, {
             method: 'PUT',
@@ -62,7 +64,7 @@ export default function useApi(baseUrl: string | null) {
             },
             body: JSON.stringify(post),
         });
-        setIsQuerying(false);
+        setIsQuerying(true);
     };
 
     // const add = async (post: ContentType) => {
