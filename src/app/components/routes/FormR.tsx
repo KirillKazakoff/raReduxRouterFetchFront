@@ -12,44 +12,37 @@ import MyInput from '../lib/MyInput';
 export default function FormR() {
     const { api, editted, isQuerying } = useApi('');
     const dispatch = useAppDispatch();
-    const inputs = useAppSelector(selectInputs);
+    // const inputs = useAppSelector(selectInputs);
 
     const params = useParams();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        let isMounted = true;
-        const unmountFunc = () => {
-            isMounted = false;
-        };
+    // useEffect(() => {
+    //     if (!params.id) return;
+    //     api.setItem(params.id).then((res) => {
+    //         const itemFields = { service: res.service, amount: res.amount };
+    //         dispatch(updateForm(itemFields));
+    //     });
+    // }, []);
 
-        if (!isMounted || !params.id) return unmountFunc;
+    // const onSubmit = async (e: React.SyntheticEvent) => {
+    //     e.preventDefault();
+    //     if (!editted) return;
 
-        api.setItem(params.id).then((res) => {
-            const itemFields = { service: res.service, amount: res.amount };
-            dispatch(updateForm(itemFields));
-        });
+    //     const result = { ...inputs, id: editted.id };
+    //     dispatch(refreshForm());
 
-        return unmountFunc;
-    }, []);
+    //     await api.edit(result);
+    //     navigate('/services');
+    // };
 
-    const onSubmit = (e: React.SyntheticEvent) => {
-        e.preventDefault();
-        if (!editted) return;
-
-        const result = { ...inputs, id: editted.id };
-        dispatch(refreshForm());
-
-        api.edit(result);
-        navigate('/services');
-    };
-
+    console.log('mount');
     if (isQuerying) return <div>Loading...</div>;
     return (
         <Form mb={4} onSubmit={onSubmit}>
             <Flex gap='10px' justifyContent='center'>
-                <MyInput value={inputs.service} name='service' />
-                <MyInput value={inputs.amount} name='amount' />
+                {/* <MyInput value={inputs.service} name='service' />
+                <MyInput value={inputs.amount} name='amount' /> */}
                 <Button variant='boxButton' bg='form' type='submit'>
                     Save
                 </Button>
