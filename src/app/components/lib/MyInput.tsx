@@ -2,8 +2,12 @@ import React from 'react';
 import { changeInput } from '../../redux/formSlice';
 import { useAppDispatch } from '../../data/reduxHooks';
 import Input, { InputProps } from '../primitives/Input';
+import { Box } from '../primitives/Box';
+import Heading from '../primitives/Heading';
 
-export default function MyInput({ value, name }: InputProps) {
+type MyInputProps = InputProps & { heading: string };
+
+export default function MyInput({ value, name, heading }: MyInputProps) {
     const dispatch = useAppDispatch();
 
     const onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -12,14 +16,17 @@ export default function MyInput({ value, name }: InputProps) {
     };
 
     return (
-        <Input
-            name={name}
-            variant='input'
-            bg='form'
-            required
-            value={value}
-            onChange={onChange}
-            type='text'
-        />
+        <Box>
+            <Heading mb={2}>{heading}</Heading>
+            <Input
+                name={name}
+                variant='input'
+                bg='form'
+                required
+                value={value}
+                onChange={onChange}
+                type='text'
+            />
+        </Box>
     );
 }

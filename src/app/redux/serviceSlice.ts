@@ -43,8 +43,10 @@ export const serviceSlice = createSlice({
             state.editted = action.payload;
         },
         editItem: (state, action: PayloadAction<ContentType>) => {
+            const { id, service, amount } = action.payload;
+
             const index = findIndex(state.items, action.payload.id);
-            state.items[index] = action.payload;
+            state.items[index] = { id, service, amount };
         },
         setStatus: (state, action: PayloadAction<boolean>) => {
             state.status = action.payload;
@@ -54,12 +56,17 @@ export const serviceSlice = createSlice({
 
 export const { addItem, removeItem, setEditted, setItems, editItem, setStatus } = serviceSlice.actions;
 
-export const selectItems = (state: RootState) => {
-    return state.service.items.filter((item) => item.service.includes(state.service.filter));
-};
 export const selectEditted = (state: RootState) => state.service.editted;
 
 export default serviceSlice.reducer;
+
+export const selectItems = (state: RootState) => {
+    return state.service.items;
+};
+
+// export const selectItems = (state: RootState) => {
+//     return state.service.items.filter((item) => item.service.includes(state.service.filter));
+// };
 
 // export const editItem = (item: ContentType): AppThunk => (dispatch) => {
 //     dispatch(serviceSlice.actions.editItem(item));

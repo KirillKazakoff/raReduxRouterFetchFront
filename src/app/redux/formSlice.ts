@@ -7,7 +7,7 @@ export interface InputsState {
     [key: string]: string;
     service: string;
     amount: string;
-    // status: 'idle' | 'loading' | 'failed';
+    desc: string;
 }
 
 export const formSlice = createSlice({

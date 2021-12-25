@@ -2,6 +2,7 @@
 export const initForm = {
     service: '',
     amount: '',
+    desc: '',
 };
 
 export type InputState = {

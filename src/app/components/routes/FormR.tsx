@@ -20,7 +20,11 @@ export default function FormR() {
     useEffect(() => {
         if (!params.id) return;
         api.setItem(params.id).then((res) => {
-            const itemFields = { service: res.service, amount: res.amount };
+            const itemFields = {
+                service: res.service,
+                amount: res.amount,
+                desc: res.desc,
+            };
             dispatch(updateForm(itemFields));
         });
     }, []);
@@ -36,18 +40,16 @@ export default function FormR() {
         navigate('/services');
     };
 
-    if (!inputs.amount) {
-        // console.log('querying');
-        console.log(isQuerying);
+    if (!isQuerying) {
         return <div>Loading...</div>;
     }
-    // console.log('rendered');
-    console.log(isQuerying);
+
     return (
         <Form mb={4} onSubmit={onSubmit}>
-            <Flex gap='10px' justifyContent='center'>
-                <MyInput value={inputs.service} name='service' />
-                <MyInput value={inputs.amount} name='amount' />
+            <Flex gap='10px' justifyContent='center' flexDirection='column'>
+                <MyInput heading='Название' value={inputs.service} name='service' />
+                <MyInput heading='Стоимость' value={inputs.amount} name='amount' />
+                <MyInput heading='Описание' value={inputs.desc} name='desc' />
                 <Button variant='boxButton' bg='form' type='submit'>
                     Save
                 </Button>

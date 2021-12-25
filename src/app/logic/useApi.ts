@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable no-use-before-define */
 import { useState } from 'react';
 import { ContentType } from '../data/initContent';
 import { useAppSelector, useAppDispatch } from '../data/reduxHooks';
@@ -21,6 +23,8 @@ export default function useApi(baseUrl: string | null) {
     const [isQuerying, setIsQuerying] = useState<boolean>(false);
 
     const list = async () => {
+        await timeoutMock();
+
         setIsQuerying(false);
         const res = await fetch(`${url}/posts`);
         const resData = await res.json();
@@ -56,6 +60,7 @@ export default function useApi(baseUrl: string | null) {
         setIsQuerying(false);
         dispatch(editItem(post));
 
+        await timeoutMock();
         await fetch(`${url}/posts`, {
             method: 'PUT',
             headers: {
@@ -95,4 +100,10 @@ export default function useApi(baseUrl: string | null) {
         isQuerying,
         api,
     };
+}
+
+function timeoutMock() {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve('ok'), 1000);
+    });
 }
