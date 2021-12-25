@@ -1,18 +1,13 @@
-import React, { EffectCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-    changeInput,
-    refreshForm,
-    selectInputs,
-    updateForm,
-} from '../../redux/formSlice';
+import { refreshForm, selectInputs, updateForm } from '../../redux/formSlice';
 import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
 import useApi from '../../logic/useApi';
 
 import Button from '../primitives/Button';
 import { Flex } from '../primitives/Flex';
 import Form from '../primitives/Form';
-import Input from '../primitives/Input';
+import MyInput from '../lib/MyInput';
 
 export default function FormR() {
     const { api, editted, isQuerying } = useApi('');
@@ -38,11 +33,6 @@ export default function FormR() {
         return unmountFunc;
     }, []);
 
-    const onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-        const changedInput = { name: e.currentTarget.name, value: e.currentTarget.value };
-        dispatch(changeInput(changedInput));
-    };
-
     const onSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (!editted) return;
@@ -58,23 +48,8 @@ export default function FormR() {
     return (
         <Form mb={4} onSubmit={onSubmit}>
             <Flex gap='10px' justifyContent='center'>
-                <Input
-                    name='service'
-                    variant='input'
-                    bg='form'
-                    required
-                    value={inputs.service}
-                    onChange={onChange}
-                />
-                <Input
-                    name='amount'
-                    variant='input'
-                    bg='form'
-                    required
-                    value={inputs.amount}
-                    onChange={onChange}
-                    type='text'
-                />
+                <MyInput value={inputs.service} name='service' />
+                <MyInput value={inputs.amount} name='amount' />
                 <Button variant='boxButton' bg='form' type='submit'>
                     Save
                 </Button>

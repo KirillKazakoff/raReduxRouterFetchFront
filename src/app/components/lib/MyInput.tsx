@@ -3,7 +3,7 @@ import { changeInput } from '../../redux/formSlice';
 import { useAppDispatch } from '../../data/reduxHooks';
 import Input, { InputProps } from '../primitives/Input';
 
-export default function MyInput({ value }: InputProps) {
+export default function MyInput({ value, name }: InputProps) {
     const dispatch = useAppDispatch();
 
     const onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -13,7 +13,7 @@ export default function MyInput({ value }: InputProps) {
 
     return (
         <Input
-            name='amount'
+            name={name}
             variant='input'
             bg='form'
             required
