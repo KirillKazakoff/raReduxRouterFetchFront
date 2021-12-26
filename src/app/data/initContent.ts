@@ -15,4 +15,3 @@ export const initContent = [
 
 export type ContentType = typeof initContent[0] & { desc?: string };
 export type SetPostType = Dispatch<SetStateAction<ContentType[]>>;
-// export type FullContentType = ContentType & { desc: string };

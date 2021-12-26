@@ -12,14 +12,12 @@ export interface ServiceState {
     items: ContentType[];
     editted: ContentType | null;
     filter: string;
-    status: boolean;
 }
 
 const initialState: ServiceState = {
     items: [],
     editted: null,
     filter: '',
-    status: false,
 };
 
 const findIndex = (items: ContentType[], id: string) => {
@@ -48,21 +46,18 @@ export const serviceSlice = createSlice({
             const index = findIndex(state.items, action.payload.id);
             state.items[index] = { id, service, amount };
         },
-        setStatus: (state, action: PayloadAction<boolean>) => {
-            state.status = action.payload;
-        },
     },
 });
 
-export const { addItem, removeItem, setEditted, setItems, editItem, setStatus } = serviceSlice.actions;
+export const { addItem, removeItem, setEditted, setItems, editItem } = serviceSlice.actions;
 
 export const selectEditted = (state: RootState) => state.service.editted;
-
-export default serviceSlice.reducer;
 
 export const selectItems = (state: RootState) => {
     return state.service.items;
 };
+
+export default serviceSlice.reducer;
 
 // export const selectItems = (state: RootState) => {
 //     return state.service.items.filter((item) => item.service.includes(state.service.filter));

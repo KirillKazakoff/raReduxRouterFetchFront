@@ -22,20 +22,9 @@ export default function useApi(baseUrl: string | null) {
 
     const [status, setStatus] = useState<Status>('zero');
 
-    const request = async (callback: () => any) => {
+    const request = async (req: () => any) => {
         setStatus('loading');
-        try {
-            const res = await callback();
-            setStatus('loaded');
-            return res;
-        } catch (e) {
-            setStatus('failed');
-            return false;
-        }
-    };
-
-    const request2 = async (req: () => any) => {
-        setStatus('loading');
+        await timeoutMock();
         try {
             const res = await req();
             if (!res.ok) throw new Error('err');
@@ -49,64 +38,51 @@ export default function useApi(baseUrl: string | null) {
     };
 
     const list = async () => {
-        const callback = async () => {
-            // await timeoutMock();
-            const res = await fetch(`${url}/posts`);
-            const resData = await res.json();
-            console.log(resData.ok);
+        const callback = async () => fetch(`${url}/posts`);
 
-            dispatch(setItems(resData));
-        };
+        const res = await request(callback);
+        const resData = await res.json();
 
-        await request(callback);
+        dispatch(setItems(resData));
     };
 
     const setItem = async (id: string) => {
-        const callback = async () => {
-            const res = await fetch(`${url}/post/${id}`);
-            const resData = await res.json();
+        const callback = async () => fetch(`${url}/post/${id}`);
 
-            dispatch(setEditted(resData));
-            return resData;
-        };
+        const res = await request(callback);
+        const resData = await res.json();
 
+        dispatch(setEditted(resData));
+        return resData;
+    };
+
+    const remove = async (id: string) => {
+        const callback = async () => fetch(`${url}/posts/${id}`, {
+            method: 'DELETE',
+        });
+
+        const index = data.findIndex((item) => item.id === id);
+        if (index === -1) return false;
+
+        dispatch(removeItem(index));
         const res = await request(callback);
         return res;
     };
 
-    const remove = async (id: string) => {
-        const callback = async () => {
-            await fetch(`${url}/posts/${id}`, {
-                method: 'DELETE',
-            });
-
-            const index = data.findIndex((item) => item.id === id);
-            if (index === -1) return;
-
-            dispatch(removeItem(index));
-        };
-
-        await request(callback);
-    };
-
     const edit = async (post: ContentType) => {
-        const callback = async () => {
-            dispatch(editItem(post));
+        const callback = async () => fetch(`${url}/posts`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(post),
+        });
 
-            await timeoutMock();
-            const res = await fetch(`${url}/poss`, {
-                method: 'PUT',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(post),
-            });
-            if (!res.ok) throw new Error('errror!');
-        };
+        dispatch(editItem(post));
 
-        await request(callback);
-        return true;
+        const res = await request(callback);
+        return res;
     };
 
     const api = {
@@ -126,7 +102,7 @@ export default function useApi(baseUrl: string | null) {
 
 function timeoutMock() {
     return new Promise((resolve) => {
-        setTimeout(() => resolve('ok'), 1000);
+        setTimeout(() => resolve('ok'), 500);
     });
 }
 

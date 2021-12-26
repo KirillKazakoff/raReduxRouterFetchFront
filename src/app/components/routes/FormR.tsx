@@ -9,6 +9,7 @@ import { Flex } from '../primitives/Flex';
 import Form from '../primitives/Form';
 import MyInput from '../lib/MyInput';
 import Loader from '../lib/Loader';
+import SNavLink from '../primitives/NavLink';
 
 export default function FormR() {
     const { api, editted, status } = useApi('');
@@ -21,11 +22,9 @@ export default function FormR() {
     useEffect(() => {
         if (!params.id) return;
         api.setItem(params.id).then((res) => {
-            const itemFields = {
-                service: res.service,
-                amount: res.amount,
-                desc: res.desc,
-            };
+            const { service, amount, desc } = res;
+            const itemFields = { service, amount, desc };
+
             dispatch(updateForm(itemFields));
         });
     }, []);
@@ -35,9 +34,9 @@ export default function FormR() {
         if (!editted) return;
 
         const result = { ...inputs, id: editted.id };
-        dispatch(refreshForm());
-
         const res = await api.edit(result);
+
+        dispatch(refreshForm());
         if (res) navigate('/services');
     };
 
@@ -51,9 +50,14 @@ export default function FormR() {
                 <MyInput heading='Название' value={inputs.service} name='service' />
                 <MyInput heading='Стоимость' value={inputs.amount} name='amount' />
                 <MyInput heading='Описание' value={inputs.desc} name='desc' />
-                <Button variant='boxButton' bg='form' type='submit'>
-                    Save
-                </Button>
+                <Flex gap='10px' mt={4}>
+                    <Button variant='boxButton' bg='form' type='submit'>
+                        Save
+                    </Button>
+                    <Button variant='boxButton' bg='cancel' type='button'>
+                        <SNavLink to='/services'>Отмена</SNavLink>
+                    </Button>
+                </Flex>
             </Flex>
         </Form>
     );
