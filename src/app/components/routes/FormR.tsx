@@ -8,9 +8,10 @@ import Button from '../primitives/Button';
 import { Flex } from '../primitives/Flex';
 import Form from '../primitives/Form';
 import MyInput from '../lib/MyInput';
+import Loader from '../lib/Loader';
 
 export default function FormR() {
-    const { api, editted, isQuerying } = useApi('');
+    const { api, editted, status } = useApi('');
     const dispatch = useAppDispatch();
     const inputs = useAppSelector(selectInputs);
 
@@ -36,12 +37,12 @@ export default function FormR() {
         const result = { ...inputs, id: editted.id };
         dispatch(refreshForm());
 
-        await api.edit(result);
-        navigate('/services');
+        const res = await api.edit(result);
+        if (res) navigate('/services');
     };
 
-    if (!isQuerying) {
-        return <div>Loading...</div>;
+    if (status !== 'loaded') {
+        return <Loader status={status} />;
     }
 
     return (

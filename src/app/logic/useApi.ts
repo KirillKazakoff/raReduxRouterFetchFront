@@ -12,7 +12,7 @@ import {
     setItems,
 } from '../redux/serviceSlice';
 
-// type Status = 'idle' | 'loading' | 'failed';
+export type Status = 'zero' | 'loading' | 'loaded' | 'failed';
 
 export default function useApi(baseUrl: string | null) {
     const url = baseUrl || 'http://localhost:9091';
@@ -20,72 +20,94 @@ export default function useApi(baseUrl: string | null) {
     const editted = useAppSelector(selectEditted);
     const dispatch = useAppDispatch();
 
-    const [isQuerying, setIsQuerying] = useState<boolean>(false);
+    const [status, setStatus] = useState<Status>('zero');
+
+    const request = async (callback: () => any) => {
+        setStatus('loading');
+        try {
+            const res = await callback();
+            setStatus('loaded');
+            return res;
+        } catch (e) {
+            setStatus('failed');
+            return false;
+        }
+    };
+
+    const request2 = async (req: () => any) => {
+        setStatus('loading');
+        try {
+            const res = await req();
+            if (!res.ok) throw new Error('err');
+
+            setStatus('loaded');
+            return res;
+        } catch (e) {
+            setStatus('failed');
+            return false;
+        }
+    };
 
     const list = async () => {
-        await timeoutMock();
+        const callback = async () => {
+            // await timeoutMock();
+            const res = await fetch(`${url}/posts`);
+            const resData = await res.json();
+            console.log(resData.ok);
 
-        setIsQuerying(false);
-        const res = await fetch(`${url}/posts`);
-        const resData = await res.json();
+            dispatch(setItems(resData));
+        };
 
-        dispatch(setItems(resData));
-        setIsQuerying(true);
+        await request(callback);
     };
 
     const setItem = async (id: string) => {
-        setIsQuerying(false);
-        const res = await fetch(`${url}/post/${id}`);
-        const resData = await res.json();
+        const callback = async () => {
+            const res = await fetch(`${url}/post/${id}`);
+            const resData = await res.json();
 
-        dispatch(setEditted(resData));
-        setIsQuerying(true);
-        return resData;
+            dispatch(setEditted(resData));
+            return resData;
+        };
+
+        const res = await request(callback);
+        return res;
     };
 
     const remove = async (id: string) => {
-        setIsQuerying(false);
-        await fetch(`${url}/posts/${id}`, {
-            method: 'DELETE',
-        });
+        const callback = async () => {
+            await fetch(`${url}/posts/${id}`, {
+                method: 'DELETE',
+            });
 
-        const index = data.findIndex((item) => item.id === id);
-        if (index === -1) return;
+            const index = data.findIndex((item) => item.id === id);
+            if (index === -1) return;
 
-        dispatch(removeItem(index));
-        setIsQuerying(true);
+            dispatch(removeItem(index));
+        };
+
+        await request(callback);
     };
 
     const edit = async (post: ContentType) => {
-        setIsQuerying(false);
-        dispatch(editItem(post));
+        const callback = async () => {
+            dispatch(editItem(post));
 
-        await timeoutMock();
-        await fetch(`${url}/posts`, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(post),
-        });
-        setIsQuerying(true);
+            await timeoutMock();
+            const res = await fetch(`${url}/poss`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(post),
+            });
+            if (!res.ok) throw new Error('errror!');
+        };
+
+        await request(callback);
+        return true;
     };
-
-    // const add = async (post: ContentType) => {
-    //     setIsQuerying(true);
-    //     await fetch(`${url}/posts`, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(post),
-    //     });
-
-    //     setData([...data, post]);
-    //     setIsQuerying(false);
-    // };
 
     const api = {
         list,
@@ -97,7 +119,7 @@ export default function useApi(baseUrl: string | null) {
     return {
         data,
         editted,
-        isQuerying,
+        status,
         api,
     };
 }
@@ -107,3 +129,18 @@ function timeoutMock() {
         setTimeout(() => resolve('ok'), 1000);
     });
 }
+
+// const add = async (post: ContentType) => {
+//     setStatus(true);
+//     await fetch(`${url}/posts`, {
+//         method: 'POST',
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(post),
+//     });
+
+//     setData([...data, post]);
+//     setStatus(false);
+// };

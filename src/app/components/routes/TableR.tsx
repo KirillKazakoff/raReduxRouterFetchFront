@@ -4,20 +4,21 @@ import useApi from '../../logic/useApi';
 import Ul from '../primitives/Ul';
 
 import Service from '../lib/Service';
+import Loader from '../lib/Loader';
 
 export default function TableR() {
-    const { api, data: items, isQuerying } = useApi('');
+    const { api, data, status } = useApi('');
 
     useEffect(() => {
         api.list();
     }, []);
 
-    const services = items.map((item) => (
+    const services = data.map((item) => (
         <Service key={item.id} item={item} remove={api.remove} />
     ));
 
-    if (!isQuerying) {
-        return <div>Loading ...</div>;
+    if (status !== 'loaded') {
+        return <Loader status={status} />;
     }
 
     return (
