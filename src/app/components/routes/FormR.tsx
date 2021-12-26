@@ -33,10 +33,11 @@ export default function FormR() {
         e.preventDefault();
         if (!editted) return;
 
+        dispatch(refreshForm());
+        console.log('hello');
         const result = { ...inputs, id: editted.id };
         const res = await api.edit(result);
 
-        dispatch(refreshForm());
         if (res) navigate('/services');
     };
 

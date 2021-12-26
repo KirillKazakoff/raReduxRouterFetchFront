@@ -38,18 +38,18 @@ export default function useApi(baseUrl: string | null) {
     };
 
     const list = async () => {
-        const callback = async () => fetch(`${url}/posts`);
+        const req = async () => fetch(`${url}/posts`);
 
-        const res = await request(callback);
+        const res = await request(req);
         const resData = await res.json();
 
         dispatch(setItems(resData));
     };
 
     const setItem = async (id: string) => {
-        const callback = async () => fetch(`${url}/post/${id}`);
+        const req = async () => fetch(`${url}/post/${id}`);
 
-        const res = await request(callback);
+        const res = await request(req);
         const resData = await res.json();
 
         dispatch(setEditted(resData));
@@ -57,7 +57,7 @@ export default function useApi(baseUrl: string | null) {
     };
 
     const remove = async (id: string) => {
-        const callback = async () => fetch(`${url}/posts/${id}`, {
+        const req = async () => fetch(`${url}/posts/${id}`, {
             method: 'DELETE',
         });
 
@@ -65,12 +65,12 @@ export default function useApi(baseUrl: string | null) {
         if (index === -1) return false;
 
         dispatch(removeItem(index));
-        const res = await request(callback);
+        const res = await request(req);
         return res;
     };
 
     const edit = async (post: ContentType) => {
-        const callback = async () => fetch(`${url}/posts`, {
+        const req = async () => fetch(`${url}/posts`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -81,7 +81,7 @@ export default function useApi(baseUrl: string | null) {
 
         dispatch(editItem(post));
 
-        const res = await request(callback);
+        const res = await request(req);
         return res;
     };
 
