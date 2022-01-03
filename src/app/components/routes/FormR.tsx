@@ -10,10 +10,14 @@ import Form from '../primitives/Form';
 import MyInput from '../lib/MyInput';
 import Loader from '../lib/Loader';
 import SNavLink from '../primitives/NavLink';
+import { setFetched } from '../../logic/thunkApi';
+import { selectEditted } from '../../redux/serviceSlice';
+
+type FormProps = {};
 
 export default function FormR() {
-    const { api, editted, status } = useApi('');
     const dispatch = useAppDispatch();
+    const editted = useAppSelector(selectEditted);
     const inputs = useAppSelector(selectInputs);
 
     const params = useParams();
@@ -21,12 +25,7 @@ export default function FormR() {
 
     useEffect(() => {
         if (!params.id) return;
-        api.setItem(params.id).then((res) => {
-            const { service, amount, desc } = res;
-            const itemFields = { service, amount, desc };
-
-            dispatch(updateForm(itemFields));
-        });
+        dispatch(setFetched(params.id));
     }, []);
 
     const onSubmit = async (e: React.SyntheticEvent) => {
@@ -41,8 +40,8 @@ export default function FormR() {
         if (res) navigate('/services');
     };
 
-    if (status !== 'loaded') {
-        return <Loader status={status} />;
+    if (!editted) {
+        return <div>...Loading</div>;
     }
 
     return (
@@ -63,3 +62,4 @@ export default function FormR() {
         </Form>
     );
 }
+// return <Loader status={status} />;
