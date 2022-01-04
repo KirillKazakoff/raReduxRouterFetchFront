@@ -3,11 +3,14 @@ import { AiFillEdit } from '@react-icons/all-files/ai/AiFillEdit';
 import { Flex, Button, Text } from '../primitives/primitives';
 import { ContentType } from '../../data/initContent';
 import SNavLink from '../primitives/NavLink';
+import { remove } from '../../logic/thunkApi';
+import { useAppDispatch } from '../../data/reduxHooks';
 
-type ServiceProps = { item: ContentType; remove: (id: string) => void };
+type ServiceProps = { item: ContentType };
 
-export default function Service({ item, remove }: ServiceProps) {
-    const onRemove = (e: React.SyntheticEvent) => remove(e.currentTarget.id);
+export default function Service({ item }: ServiceProps) {
+    const dispatch = useAppDispatch();
+    const onRemove = (e: React.SyntheticEvent) => dispatch(remove(e.currentTarget.id));
 
     return (
         <Flex key={item.id} gap='40px' alignItems='center'>

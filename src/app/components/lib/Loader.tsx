@@ -1,5 +1,5 @@
 import React from 'react';
-import { Status } from '../../logic/useApi';
+import { Status } from '../../redux/statusSlice';
 import { Text } from '../primitives/Text';
 
 type LoaderProps = { status: Status };

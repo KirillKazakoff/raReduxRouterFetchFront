@@ -1,8 +1,8 @@
+/* eslint-disable consistent-return */
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { refreshForm, selectInputs, updateForm } from '../../redux/formSlice';
+import { selectInputs } from '../../redux/formSlice';
 import { useAppDispatch, useAppSelector } from '../../data/reduxHooks';
-import useApi from '../../logic/useApi';
 
 import Button from '../primitives/Button';
 import { Flex } from '../primitives/Flex';
@@ -10,15 +10,16 @@ import Form from '../primitives/Form';
 import MyInput from '../lib/MyInput';
 import Loader from '../lib/Loader';
 import SNavLink from '../primitives/NavLink';
-import { setFetched } from '../../logic/thunkApi';
-import { selectEditted } from '../../redux/serviceSlice';
 
-type FormProps = {};
+import { edit, setFetched } from '../../logic/thunkApi';
+import { selectEditted } from '../../redux/serviceSlice';
+import { selectFormStatus, setFormStatus } from '../../redux/statusSlice';
 
 export default function FormR() {
     const dispatch = useAppDispatch();
     const editted = useAppSelector(selectEditted);
     const inputs = useAppSelector(selectInputs);
+    const status = useAppSelector(selectFormStatus);
 
     const params = useParams();
     const navigate = useNavigate();
@@ -26,22 +27,24 @@ export default function FormR() {
     useEffect(() => {
         if (!params.id) return;
         dispatch(setFetched(params.id));
+
+        return () => {
+            dispatch(setFormStatus('idle'));
+        };
     }, []);
 
     const onSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         if (!editted) return;
 
-        dispatch(refreshForm());
-        console.log('hello');
         const result = { ...inputs, id: editted.id };
-        const res = await api.edit(result);
+        const res = await dispatch(edit(result));
 
         if (res) navigate('/services');
     };
 
-    if (!editted) {
-        return <div>...Loading</div>;
+    if (status !== 'loaded') {
+        return <Loader status={status} />;
     }
 
     return (
@@ -62,4 +65,3 @@ export default function FormR() {
         </Form>
     );
 }
-// return <Loader status={status} />;
