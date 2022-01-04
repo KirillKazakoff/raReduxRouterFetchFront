@@ -1,11 +1,10 @@
-import { ActionCreatorWithPayload, PayloadAction } from '@reduxjs/toolkit';
+import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { updateForm } from '../redux/formSlice';
 import { setEditted, setItems } from '../redux/serviceSlice';
 import { setFormStatus, setTableStatus, Status } from '../redux/statusSlice';
 import { AppThunk } from '../redux/store';
 
-const setterType = typeof setFormStatus;
-const url = 'http://localhost:9091';
+const baseUrl = 'http://localhost:9091';
 
 function timeoutMock() {
     return new Promise((resolve) => {
@@ -13,57 +12,62 @@ function timeoutMock() {
     });
 }
 
-type Request = {
-    req: () => any;
-    setStatus: ActionCreatorWithPayload<Status, string>;
-} & AppThunk<string>;
+// type RequestType = (
+//     req: () => Promise<Response>,
+//     setStatus: ActionCreatorWithPayload<Status, string>
+// ) => AppThunk<Promise<false | Response>>;
 
-const request: Request = (req, setStatus) => async (dispatch) => {
-    dispatch(setStatus('loading'));
-    await timeoutMock();
-    try {
-        const res = await req();
-        if (!res.ok) throw new Error('err');
-
-        setStatus('loaded');
-        return res;
-    } catch (e) {
-        setStatus('failed');
-        return false;
-    }
-};
-
-// const request = async (
-//     req: () => any,
-//     setStatus: ActionCreatorWithPayload<Status, string>,
-// ) => {
+// const request: RequestType = (req, setStatus) => async (dispatch) => {
 //     dispatch(setStatus('loading'));
 //     await timeoutMock();
 //     try {
 //         const res = await req();
 //         if (!res.ok) throw new Error('err');
 
-//         setStatus('loaded');
+//         dispatch(setStatus('loaded'));
 //         return res;
 //     } catch (e) {
-//         setStatus('failed');
+//         dispatch(setStatus('failed'));
 //         return false;
 //     }
 // };
 
+type RequestType = (
+    reqObj: {
+        url: string;
+        settings: RequestInit | undefined;
+    },
+    setStatus: ActionCreatorWithPayload<Status, string>
+) => AppThunk<Promise<false | Response>>;
+
+const request: RequestType = (reqObj, setStatus) => async (dispatch) => {
+    dispatch(setStatus('loading'));
+    await timeoutMock();
+
+    const res = await fetch(`${baseUrl}/${reqObj.url}`, reqObj.settings);
+    if (!res.ok) {
+        dispatch(setStatus('failed'));
+        return false;
+    }
+
+    dispatch(setStatus('loaded'));
+    return res;
+};
+
 export const list = (): AppThunk => async (dispatch) => {
-    const req = async () => fetch(`${url}/posts`);
+    const reqObj = { url: 'posts', settings: undefined };
+    const res = await dispatch(request(reqObj, setTableStatus));
 
-    const res = await request(req, setTableStatus);
+    if (!res) return;
+
     const resData = await res.json();
-
     dispatch(setItems(resData));
 };
 
 // export const list = (): AppThunk => async (dispatch) => {
 //     dispatch(setTableStatus('loading'));
 
-//     const res = await fetch(`${url}/posts`);
+//     const res = await fetch(`${baseUrl}/posts`);
 //     const resData = await res.json();
 
 //     dispatch(setItems(resData));
@@ -74,7 +78,7 @@ export const list = (): AppThunk => async (dispatch) => {
 export const setFetched = (id: string): AppThunk => async (dispatch) => {
     dispatch(setFormStatus('loading'));
 
-    const res = await fetch(`${url}/post/${id}`);
+    const res = await fetch(`${baseUrl}/post/${id}`);
     const resData = await res.json();
 
     const { service, amount, desc } = resData;
